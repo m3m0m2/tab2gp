@@ -12,6 +12,11 @@ public class Stroke
         notes = new TreeMap<Integer, Integer>();
     }
 
+    public void clear()
+    {
+        notes.clear();
+    }
+
     public void addNote(int string, int fret)
     {
         notes.put(string, fret);
