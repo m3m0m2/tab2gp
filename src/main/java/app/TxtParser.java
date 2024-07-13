@@ -3,7 +3,7 @@ package app;
 import java.io.FileOutputStream;
 import java.io.FileNotFoundException;
 import java.util.Map;
-import java.util.Scanner;   // To read text files
+import java.util.Scanner;
 
 import org.herac.tuxguitar.song.factory.TGFactory;
 import org.herac.tuxguitar.song.managers.TGSongManager;
@@ -197,8 +197,14 @@ public class TxtParser
     // TODO: Add clean line to remove html tags as <p /> before tab line
     protected boolean parseLine(String line)
     {
-        // TODO: Better way to filter valid lines
-        if (line.length() < 34 || line.charAt(1) != '|')
+        // Remove html tags if any
+        line = line.replaceAll("<[^>]*>", "");
+
+        // Expect ticks to be multiple of a measure and at least one
+        // TODO: Consider regex to exclude invalid lines, expect only [0-9- ]
+        if ((line.length() % (2*ticksForMeasure)) != 2 ||
+            line.length() < (2+2*ticksForMeasure) ||
+            line.charAt(1) != '|')
         {
             // Flush
             lastTime = time;
@@ -241,12 +247,12 @@ public class TxtParser
 
     public TxtParser(Scanner scanner)
     {
-        // TODO: Consider options to change ticksForMeasure and ticksForQuarter
+        // TODO: Consider cli options to set ticksForMeasure and ticksForQuarter
         init();
         while (scanner.hasNextLine()) {
             String line = scanner.nextLine();
             parseLine(line);
-            // TODO: Add better error detection if returns false, logging failing line
+            // TODO: Add warn log if returns false
         }
 
         createTGSong();

@@ -204,5 +204,30 @@ public class TxtParserTest
         expectedStroke.addNote(2, 4);
         assertVoiceHasNotes(voice, 4, false, expectedStroke);
     }
+
+    @Test
+    public void cleanseHtmlTagsFromLine()
+    {
+        String content =
+"E|-3---------------------------------------------------- 3--------\n";
+        txtInput = "<p /><tab1>" + content + "<br /><p />";
+
+        Scanner scanner = new Scanner(txtInput);
+        parser = new TxtParser(scanner);
+
+        TGSong song = parser.getSong();
+        TGTrack track = song.getTrack(0);
+        TGMeasure measure = track.getMeasure(0);
+        List<TGBeat> beats = measure.getBeats();
+
+        Stroke expectedStroke = new Stroke();
+        assertEquals(1, beats.size());
+
+        // Beat 0 tick 0 is note 4/2 dur
+        TGBeat beat = beats.get(0);
+        TGVoice voice = beat.getVoice(0);
+        expectedStroke.addNote(1, 3);
+        assertVoiceHasNotes(voice, 2, false, expectedStroke);
+    }
 }
 
