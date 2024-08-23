@@ -18,7 +18,7 @@ $ mvn -Dtg.path=<your_tuxguitar_path> package
 Specify input text file and output gp file. For example:
 
 ```
-$ ./tab2gp.sh README.md README.gp
+$ ./tab2gp.sh -i README.md -n 'Simple Song' README.gp
 ```
 
 ```

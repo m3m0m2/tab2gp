@@ -164,7 +164,7 @@ public class TxtParser
         manager = new TGSongManager();
         factory = manager.getFactory();
         song = manager.newSong();
-        song.setComments("created with tab2gp");
+        song.setComments("Created with tab2gp");
         track = song.getTrack(0);
     }
 
