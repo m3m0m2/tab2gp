@@ -199,12 +199,25 @@ public class TxtParser
     {
         // Remove html tags if any
         line = line.replaceAll("<[^>]*>", "");
+        boolean validLine = false;
 
-        // Expect ticks to be multiple of a measure and at least one
+        // TODO: Consider using stringName for checks
+        Character stringName;
+        if (line.length() > 3 && line.charAt(1) == '|') {
+            stringName = line.charAt(0);
+
+            // Remove extra | characters in some tabs as:
+            // B|10--------10-- 9----------------|10--10------ 7------ 7----------|<br />
+            line = line.substring(2).replace("|", "");
+
+            validLine = ((line.length() % (2*ticksForMeasure)) == 0 &&
+                line.length() >= (2*ticksForMeasure));
+        }
+        //System.out.printf("Debug clean line: %s\n", line);
+        //System.out.printf("valid: %b, line length: %d vs %d\n", validLine, line.length(), 2*ticksForMeasure);
+
         // TODO: Consider regex to exclude invalid lines, expect only [0-9- ]
-        if ((line.length() % (2*ticksForMeasure)) != 2 ||
-            line.length() < (2+2*ticksForMeasure) ||
-            line.charAt(1) != '|')
+        if (!validLine)
         {
             // Flush
             lastTime = time;
@@ -214,12 +227,10 @@ public class TxtParser
         }
 
         time = lastTime;
-        Character stringName = line.charAt(0);
-        // TODO: Consider using stringName for checks
 
         string++;
 
-        for (int i=2; i<(line.length()-1); i+=2, time++)
+        for (int i=0; i<(line.length()-1); i+=2, time++)
         {
             Character c1 = line.charAt(i);
             Character c2 = line.charAt(i+1);
@@ -228,7 +239,7 @@ public class TxtParser
             int fret = 0;
             if (c2 < '0' || c2 > '9') {
                 // At least a measure is needed
-                if (i <= (2 + 2*ticksForMeasure))
+                if (i <= (2*ticksForMeasure))
                     return false;
                 break;
             }
